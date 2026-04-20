@@ -25,6 +25,7 @@ docker compose up -d --build
 ## Requirements
 
 - Docker with the modern Compose plugin: `docker compose`
+- Your shell user must be able to use Docker, or you must run Docker commands with `sudo`
 - `envsubst` from `gettext-base`
 - A PostgreSQL RDS instance reachable from the host
 - An S3 bucket and AWS credentials available to the Synapse container environment/host role
@@ -32,6 +33,22 @@ docker compose up -d --build
 - TLS certificates under `/etc/letsencrypt/live/$TURN_DOMAIN/` for coturn
 
 Use DNS-only Cloudflare records for TURN. Cloudflare proxying is fine for the web domain when your reverse proxy is configured for it, but TURN traffic should not be proxied through Cloudflare.
+
+## EC2 Docker Permission
+
+If Docker says `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`, add your Ubuntu user to the Docker group:
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+docker compose up -d --build
+```
+
+If `newgrp docker` does not refresh the session, log out and SSH back in. To start immediately without changing groups, use:
+
+```bash
+sudo docker compose up -d --build
+```
 
 ## What Gets Generated
 

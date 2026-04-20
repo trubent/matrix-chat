@@ -67,6 +67,37 @@ generate_secret() {
   fi
 }
 
+check_docker_compose() {
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "Docker is not installed or not in PATH."
+    echo "Install Docker first, then run: docker compose up -d --build"
+    return 1
+  fi
+
+  if ! docker compose version >/dev/null 2>&1; then
+    echo "Docker Compose plugin is not available."
+    echo "Install the modern Docker Compose plugin, then run: docker compose up -d --build"
+    return 1
+  fi
+
+  if ! docker compose ps >/dev/null 2>&1; then
+    echo "Docker is installed, but this user cannot access the Docker daemon."
+    echo ""
+    echo "On Ubuntu/EC2, fix it with:"
+    echo "  sudo usermod -aG docker \$USER"
+    echo "  newgrp docker"
+    echo ""
+    echo "Or log out and SSH back in, then run:"
+    echo "  docker compose up -d --build"
+    echo ""
+    echo "If you need to start immediately, you can run:"
+    echo "  sudo docker compose up -d --build"
+    return 1
+  fi
+
+  return 0
+}
+
 prompt_required "Main Matrix domain (example.com)" DOMAIN
 prompt_default "Matrix server name" "$DOMAIN" SERVER_NAME
 prompt_required "TURN domain (turn.example.com)" TURN_DOMAIN
@@ -122,8 +153,12 @@ printf "Start the stack now with docker compose up -d --build? [y/N]: "
 read -r start_now
 case "$start_now" in
   y|Y|yes|YES)
-    docker compose up -d --build
-    echo "[+] Stack started"
+    if check_docker_compose; then
+      docker compose up -d --build
+      echo "[+] Stack started"
+    else
+      echo "Config files are ready. Start the stack after fixing Docker access."
+    fi
     ;;
   *)
     echo "Run manually when ready: docker compose up -d --build"
