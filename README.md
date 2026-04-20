@@ -92,6 +92,30 @@ The template keeps a local media copy and writes to S3 asynchronously. That make
 
 In production, put a reverse proxy in front of Synapse and Element and expose normal HTTPS ports for Matrix clients.
 
+## Nginx Reverse Proxy
+
+The Docker stack exposes Synapse on `8008` and Element on `8080`. Public domains need Nginx or another reverse proxy on `80/443`.
+
+After Docker is running and DNS points to the EC2 public IP, run:
+
+```bash
+chmod +x setup-nginx.sh
+./setup-nginx.sh
+```
+
+The script installs Nginx/certbot when missing, proxies `ELEMENT_DOMAIN` to Element, proxies `DOMAIN` Matrix paths to Synapse, adds Matrix `.well-known` responses, and can request Let's Encrypt certificates.
+
+Typical values:
+
+```env
+DOMAIN=gomik.site
+SERVER_NAME=gomik.site
+ELEMENT_DOMAIN=app.gomik.site
+TURN_DOMAIN=call.gomik.site
+```
+
+For Cloudflare, keep TURN DNS-only. During the first Let's Encrypt certificate request, the web records must allow normal HTTP validation to reach the EC2 on port `80`.
+
 ## Validation
 
 ```bash

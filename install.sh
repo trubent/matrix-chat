@@ -112,6 +112,7 @@ check_docker_compose() {
 
 prompt_required "Main Matrix domain (example.com)" DOMAIN
 prompt_default "Matrix server name" "$DOMAIN" SERVER_NAME
+prompt_default "Element web domain" "app.$DOMAIN" ELEMENT_DOMAIN
 prompt_required "TURN domain (turn.example.com)" TURN_DOMAIN
 prompt_required "Server public IPv4 address" PUBLIC_IP
 echo ""
@@ -137,6 +138,7 @@ FORM_SECRET="$(generate_secret)"
 cat > .env <<EOF
 DOMAIN=$DOMAIN
 SERVER_NAME=$SERVER_NAME
+ELEMENT_DOMAIN=$ELEMENT_DOMAIN
 
 TURN_DOMAIN=$TURN_DOMAIN
 TURN_SECRET=$TURN_SECRET
@@ -176,6 +178,24 @@ case "$start_now" in
     ;;
   *)
     echo "Run manually when ready: docker compose up -d --build"
+    ;;
+esac
+
+echo ""
+printf "Set up Nginx reverse proxy for public HTTP/HTTPS now? [y/N]: "
+read -r setup_nginx
+case "$setup_nginx" in
+  y|Y|yes|YES)
+    if [ -x ./setup-nginx.sh ]; then
+      ./setup-nginx.sh
+    else
+      echo "setup-nginx.sh is not executable. Run:"
+      echo "  chmod +x setup-nginx.sh"
+      echo "  ./setup-nginx.sh"
+    fi
+    ;;
+  *)
+    echo "Run later when ready: ./setup-nginx.sh"
     ;;
 esac
 
