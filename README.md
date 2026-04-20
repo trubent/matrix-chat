@@ -1,8 +1,28 @@
-Self-hosted Matrix Stack Template
+# Self-hosted Matrix Stack Template
 
 Reusable Docker template for a Matrix/Synapse backend, Element Web, coturn with TLS, AWS RDS PostgreSQL, and S3 media storage.
 
-Requirements
+## Quick Start
+
+```bash
+git clone https://github.com/YOUR_USER/matrix-infra-test.git
+cd matrix-infra-test
+chmod +x install.sh setup.sh
+./install.sh
+```
+
+The installer asks for your domains, public IP, RDS PostgreSQL settings, and S3 bucket. It writes `.env`, generates Synapse and Element configs, and can start the stack with Docker Compose.
+
+If you prefer editing values manually:
+
+```bash
+cp .env.example .env
+$EDITOR .env
+./setup.sh
+docker compose up -d --build
+```
+
+## Requirements
 
 - Docker with the modern Compose plugin: `docker compose`
 - `envsubst` from `gettext-base`
@@ -13,7 +33,19 @@ Requirements
 
 Use DNS-only Cloudflare records for TURN. Cloudflare proxying is fine for the web domain when your reverse proxy is configured for it, but TURN traffic should not be proxied through Cloudflare.
 
-Media Uploads
+## What Gets Generated
+
+`install.sh` and `setup.sh` generate local runtime files:
+
+- `.env`
+- `synapse/homeserver.yaml`
+- `synapse/homeserver.log.config`
+- `element-config.json`
+- `synapse/media_store/`
+
+The secret-bearing generated files are ignored by Git. Synapse generates `/data/signing.key` itself on first start. Do not commit generated config files, secrets, keys, database files, or media uploads.
+
+## Media Uploads
 
 `MAX_UPLOAD_SIZE` controls Synapse's upload limit. The default example value is `200M`.
 
@@ -28,24 +60,7 @@ If uploads fail for files or videos but small images sometimes work, check every
 
 The template keeps a local media copy and writes to S3 asynchronously. That makes client uploads less likely to fail because of a temporary S3 delay.
 
-Setup
-
-```bash
-cp .env.example .env
-$EDITOR .env
-./setup.sh
-docker compose up -d --build
-```
-
-`setup.sh` refuses placeholder values, generates:
-
-- `synapse/homeserver.yaml`
-- `synapse/homeserver.log.config`
-- `element-config.json`
-
-Synapse generates `/data/signing.key` itself on first start.
-
-Ports
+## Ports
 
 - Synapse listens on host port `8008`
 - Element listens on host port `8080`
@@ -53,7 +68,7 @@ Ports
 
 In production, put a reverse proxy in front of Synapse and Element and expose normal HTTPS ports for Matrix clients.
 
-Validation
+## Validation
 
 ```bash
 ./setup.sh
