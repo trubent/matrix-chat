@@ -1,0 +1,5 @@
+.env
+element-config.json
+synapse/homeserver.yaml
+synapse/signing.key
+synapse/media_store/

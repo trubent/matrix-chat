@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  synapse:
+    build: .
+    container_name: synapse
+    restart: always
+    user: "0:0"
+    env_file:
+      - .env
+    environment:
+      - SYNAPSE_SERVER_NAME=${SERVER_NAME:?SERVER_NAME is required. Create .env and run ./setup.sh first.}
+      - SYNAPSE_REPORT_STATS=no
+    volumes:
+      - ./synapse:/data
+    ports:
+      - "8008:8008"
+
+  element:
+    image: vectorim/element-web:latest
+    container_name: element
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./element-config.json:/app/config.json
+
+  coturn:
+    image: instrumentisto/coturn
+    container_name: coturn
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    command: >
+      -n
+      --log-file=stdout
+      --min-port=49152
+      --max-port=65535
+      --realm=${SERVER_NAME:?SERVER_NAME is required. Create .env and run ./setup.sh first.}
+      --use-auth-secret
+      --static-auth-secret=${TURN_SECRET:?TURN_SECRET is required. Create .env and run ./setup.sh first.}
+      --external-ip=${PUBLIC_IP:?PUBLIC_IP is required. Create .env and run ./setup.sh first.}
+      --fingerprint
+      --cert=/etc/letsencrypt/live/${TURN_DOMAIN:?TURN_DOMAIN is required. Create .env and run ./setup.sh first.}/fullchain.pem
+      --pkey=/etc/letsencrypt/live/${TURN_DOMAIN:?TURN_DOMAIN is required. Create .env and run ./setup.sh first.}/privkey.pem
+      --listening-port=3478
+      --tls-listening-port=5349

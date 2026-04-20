@@ -1,0 +1,62 @@
+server_name: "${SERVER_NAME}"
+public_baseurl: "https://${DOMAIN}/"
+
+pid_file: /data/homeserver.pid
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
+
+database:
+  name: psycopg2
+  args:
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    database: ${POSTGRES_DB}
+    host: ${POSTGRES_HOST}
+    port: ${POSTGRES_PORT}
+    cp_min: 5
+    cp_max: 10
+  allow_unsafe_locale: true
+
+log_config: "/data/homeserver.log.config"
+
+media_store_path: /data/media_store
+max_upload_size: "${MAX_UPLOAD_SIZE}"
+
+media_storage_providers:
+  - module: s3_storage_provider.S3StorageProviderBackend
+    store_local: true
+    store_remote: true
+    store_synchronous: false
+    config:
+      bucket: ${S3_BUCKET}
+      region_name: ${AWS_REGION}
+
+registration_shared_secret: "${REGISTRATION_SHARED_SECRET}"
+report_stats: false
+macaroon_secret_key: "${MACAROON_SECRET_KEY}"
+form_secret: "${FORM_SECRET}"
+signing_key_path: "/data/signing.key"
+
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+enable_registration: true
+enable_registration_without_verification: true
+
+turn_uris:
+  - "turn:${TURN_DOMAIN}:3478?transport=udp"
+  - "turn:${TURN_DOMAIN}:3478?transport=tcp"
+  - "turns:${TURN_DOMAIN}:5349?transport=tcp"
+
+turn_shared_secret: "${TURN_SECRET}"
+turn_user_lifetime: 86400000
+turn_allow_guests: true
+
+suppress_key_server_warning: true
