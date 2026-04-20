@@ -120,6 +120,7 @@ prompt_required "PostgreSQL host/RDS endpoint" POSTGRES_HOST
 prompt_default "PostgreSQL database" "synapse" POSTGRES_DB
 prompt_default "PostgreSQL user" "synapse" POSTGRES_USER
 prompt_default "PostgreSQL port" "5432" POSTGRES_PORT
+prompt_default "PostgreSQL SSL mode" "require" POSTGRES_SSLMODE
 prompt_secret "PostgreSQL password" POSTGRES_PASSWORD
 echo ""
 
@@ -146,6 +147,7 @@ POSTGRES_DB=$POSTGRES_DB
 POSTGRES_USER=$POSTGRES_USER
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 POSTGRES_PORT=$POSTGRES_PORT
+POSTGRES_SSLMODE=$POSTGRES_SSLMODE
 
 S3_BUCKET=$S3_BUCKET
 AWS_REGION=$AWS_REGION

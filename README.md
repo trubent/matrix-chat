@@ -112,3 +112,5 @@ If Synapse logs show `PermissionError: [Errno 13] Permission denied: '/data/sign
 sudo chown -R 991:991 synapse
 docker compose restart synapse
 ```
+
+If Synapse logs show `password authentication failed` or `no pg_hba.conf entry ... no encryption`, check the RDS username/password and keep `POSTGRES_SSLMODE=require` in `.env`.
