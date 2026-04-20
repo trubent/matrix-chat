@@ -142,12 +142,13 @@ LOGEOF
 chmod 644 synapse/homeserver.yaml
 chmod 644 synapse/homeserver.log.config
 chmod 644 element-config.json
+chmod 755 synapse 2>/dev/null || true
 chmod 755 synapse/media_store 2>/dev/null || true
 
 if command -v chown >/dev/null 2>&1; then
-  chown 991:991 synapse/media_store 2>/dev/null || chmod 777 synapse/media_store 2>/dev/null || true
+  chown 991:991 synapse synapse/media_store 2>/dev/null || chmod 777 synapse synapse/media_store 2>/dev/null || true
 else
-  chmod 777 synapse/media_store 2>/dev/null || true
+  chmod 777 synapse synapse/media_store 2>/dev/null || true
 fi
 
 echo "[+] Generated:"

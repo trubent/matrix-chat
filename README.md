@@ -105,3 +105,10 @@ docker compose logs --tail=100 coturn
 ```
 
 If you still have the legacy Python `docker-compose` 1.29.x installed, prefer `docker compose`. The old tool can fail during recreate with `KeyError: 'ContainerConfig'` even when the template is valid.
+
+If Synapse logs show `PermissionError: [Errno 13] Permission denied: '/data/signing.key'`, fix the mounted Synapse data directory and restart:
+
+```bash
+sudo chown -R 991:991 synapse
+docker compose restart synapse
+```
