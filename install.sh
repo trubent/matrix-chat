@@ -81,6 +81,18 @@ check_docker_compose() {
   fi
 
   if ! docker compose ps >/dev/null 2>&1; then
+    if command -v sudo >/dev/null 2>&1 && ! sudo docker ps >/dev/null 2>&1; then
+      echo "Docker is installed, but the Docker daemon is not running."
+      echo ""
+      echo "On Ubuntu/EC2, start it with:"
+      echo "  sudo systemctl enable --now docker"
+      echo "  sudo systemctl status docker"
+      echo ""
+      echo "Then run:"
+      echo "  docker compose up -d --build"
+      return 1
+    fi
+
     echo "Docker is installed, but this user cannot access the Docker daemon."
     echo ""
     echo "On Ubuntu/EC2, fix it with:"

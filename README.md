@@ -36,6 +36,13 @@ Use DNS-only Cloudflare records for TURN. Cloudflare proxying is fine for the we
 
 ## EC2 Docker Permission
 
+If `sudo docker ps` says `Cannot connect to the Docker daemon`, start Docker first:
+
+```bash
+sudo systemctl enable --now docker
+sudo systemctl status docker
+```
+
 If Docker says `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`, add your Ubuntu user to the Docker group:
 
 ```bash
