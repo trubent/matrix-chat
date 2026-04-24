@@ -5,8 +5,8 @@ Reusable Docker template for a Matrix/Synapse backend, Element Web, coturn with 
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USER/matrix-infra-test.git
-cd matrix-infra-test
+git clone https://github.com/trubent/matrix-chat.git
+cd matrix-chat
 chmod +x install.sh setup.sh
 ./install.sh
 ```
